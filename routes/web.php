@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -16,11 +17,19 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('customers.index');
     })->name('home');
 
-    Route::resource('customers', CustomerController::class);
+    Route::resources([
+        'customers' => CustomerController::class,
+        'products' => ProductController::class,
+    ]);
 
     Route::group(['prefix' => 'customer'], function () {
         Route::get('/export', [CustomerController::class, 'exportCustomers'])->name('exportCustomers');
         Route::get('/exportDownload/{file}', [CustomerController::class, 'exportDownload'])->name('exportDownload');
         Route::post('/import', [CustomerController::class, 'importCustomers'])->name('importCustomers');
+    });
+
+    Route::group(['prefix' => 'product'], function () {
+        Route::get('/export', [ProductController::class, 'exportProducts'])->name('exportProducts');
+        Route::post('/import', [ProductController::class, 'importProducts'])->name('importProducts');
     });
 });
