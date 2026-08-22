@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +16,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
-        return redirect()->route('customers.index');
+        return redirect()->route('invoiceList');
     })->name('home');
 
     Route::resources([
@@ -25,6 +26,17 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::get('/inventoryhistory', [InventoryController::class, 'inventoryHistory'])->name('inventoryHistory');
+
+    Route::group(['prefix' => 'invoice'], function () {
+        Route::get('/list', [InvoiceController::class, 'invoiceList'])->name('invoiceList');
+        Route::get('/form', [InvoiceController::class, 'showGenerateForm'])->name('showGenerateForm');
+        Route::post('/generate', [InvoiceController::class, 'generateInvoice'])->name('generateInvoice');
+        Route::post('/add-product', [InvoiceController::class, 'addSingleProduct'])->name('addSingleProduct');
+        Route::post('/product-info', [InvoiceController::class, 'getProductInfo'])->name('getProductInfo');
+        Route::get('/download-zip/{file}', [InvoiceController::class, 'downloadZip'])->name('downloadZip');
+        Route::get('/download-sample', [InvoiceController::class, 'downloadSample'])->name('downloadSample');
+        Route::post('/gen-inv', [InvoiceController::class, 'genInv'])->name('geninv');
+    });
 
     Route::group(['prefix' => 'customer'], function () {
         Route::get('/export', [CustomerController::class, 'exportCustomers'])->name('exportCustomers');
