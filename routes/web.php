@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -15,9 +17,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('invoiceList');
-    })->name('home');
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
 
     Route::resources([
         'customers' => CustomerController::class,
@@ -26,6 +26,11 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::get('/inventoryhistory', [InventoryController::class, 'inventoryHistory'])->name('inventoryHistory');
+
+    Route::group(['prefix' => 'settings'], function () {
+        Route::get('/view', [SettingsController::class, 'viewSettings'])->name('viewSettings');
+        Route::post('/update', [SettingsController::class, 'settingsUpdate'])->name('settingsUpdate');
+    });
 
     Route::group(['prefix' => 'invoice'], function () {
         Route::get('/list', [InvoiceController::class, 'invoiceList'])->name('invoiceList');
